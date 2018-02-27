@@ -20,12 +20,6 @@ import keras.backend as K
 
 from windpuller import WindPuller
 from dataset import DataSet
-from feature import extract_from_file
-import math
-from config import exchange_fee, selector, points_for_test, input_shape
-from rawdata import RawData, read_sample_data
-from chart import extract_feature
-from datetime import datetime
 
 
 def read_ultimate(path, input_shape):
