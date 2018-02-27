@@ -52,8 +52,10 @@ def make_model(input_shape, nb_epochs=100, batch_size=128, lr=0.01, n_layers=1, 
            nb_epoch=nb_epochs, shuffle=True, verbose=1,
            validation_split=0.02,
            # validation_data=(test_set.images, test_set.labels),
-           callbacks=[TensorBoard(histogram_freq=1),
-                      ModelCheckpoint(filepath=model_path + '.best', save_best_only=True, mode='min')])
+           callbacks=[
+               # TensorBoard(histogram_freq=1),
+               ModelCheckpoint(filepath=model_path + '.best', save_best_only=True, mode='min')
+           ])
 
     scores = wp.evaluate(test_set.images, test_set.labels, verbose=0)
     print('Test loss:', scores[0])
