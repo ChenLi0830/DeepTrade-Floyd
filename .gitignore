@@ -1,1 +1,4 @@
 .idea
+.floydexpt
+.floydignore
+__pycache__
