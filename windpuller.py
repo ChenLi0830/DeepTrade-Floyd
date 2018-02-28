@@ -22,7 +22,8 @@ from keras.initializers import Constant
 
 
 class WindPuller(object):
-    def __init__(self, input_shape, lr=0.01, n_layers=2, n_hidden=8, rate_dropout=0.2, loss='risk_estimation_long'):
+    # def __init__(self, input_shape, lr=0.01, n_layers=2, n_hidden=8, rate_dropout=0.2, loss='risk_estimation_long'):
+    def __init__(self, input_shape, lr=0.01, n_layers=2, n_hidden=8, rate_dropout=0.2, loss='risk_estimation_short'):
         print("initializing..., learing rate %s, n_layers %s, n_hidden %s, dropout rate %s." %(lr, n_layers, n_hidden, rate_dropout))
         self.model = Sequential()
         self.model.add(Dropout(rate=rate_dropout, input_shape=(input_shape[0], input_shape[1])))
@@ -38,10 +39,10 @@ class WindPuller(object):
         self.model.add(Dense(1, kernel_initializer=initializers.glorot_uniform()))
         # self.model.add(BatchNormalization(axis=-1, moving_mean_initializer=Constant(value=0.5),
         #               moving_variance_initializer=Constant(value=0.25)))
-        self.model.add(BatchRenormalization(axis=-1, beta_init=Constant(value=0.5)))
-        self.model.add(Activation('relu_limited_long'))
-        # self.model.add(BatchRenormalization(axis=-1, beta_init=Constant(value=-0.5)))
-        # self.model.add(Activation('relu_limited_short'))
+        # self.model.add(BatchRenormalization(axis=-1, beta_init=Constant(value=0.5)))
+        # self.model.add(Activation('relu_limited_long'))
+        self.model.add(BatchRenormalization(axis=-1, beta_init=Constant(value=-0.5)))
+        self.model.add(Activation('relu_limited_short'))
         # opt = RMSprop(lr=lr)
         opt = Adam(lr=lr, amsgrad=True)
         self.model.compile(loss=loss,

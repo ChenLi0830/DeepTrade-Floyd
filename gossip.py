@@ -47,7 +47,7 @@ def make_model(input_shape, nb_epochs=100, batch_size=128, lr=0.01, n_layers=1, 
            # validation_split=0.02,
            validation_data=(test_set.images, test_set.labels),
            callbacks=[
-               # TensorBoard(histogram_freq=1),
+               TensorBoard(log_dir='/output/logs', histogram_freq=10),
                ModelCheckpoint(filepath=model_path + '.best', save_best_only=True, mode='min')
            ])
 
@@ -79,6 +79,6 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         operation = sys.argv[1]
     if operation == "train":
-        make_model([30, 61], 5000, 10240, n_layers=2, lr=0.002)
+        make_model([30, 61], 5000, 20480, n_layers=2, lr=0.002)
     else:
         print("Usage: gossip.py [train | evaluate | predict | clear_session]")
