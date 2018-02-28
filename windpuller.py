@@ -16,7 +16,7 @@
 from keras.layers import Dense, LSTM, Activation, BatchNormalization, Dropout, initializers
 from renormalization import BatchRenormalization
 from keras.models import Sequential
-from keras.optimizers import SGD, RMSprop
+from keras.optimizers import SGD, RMSprop, Adam
 from keras.models import load_model
 from keras.initializers import Constant
 
@@ -42,7 +42,8 @@ class WindPuller(object):
         self.model.add(Activation('relu_limited_long'))
         # self.model.add(BatchRenormalization(axis=-1, beta_init=Constant(value=-0.5)))
         # self.model.add(Activation('relu_limited_short'))
-        opt = RMSprop(lr=lr)
+        # opt = RMSprop(lr=lr)
+        opt = Adam(lr=lr, amsgrad=True)
         self.model.compile(loss=loss,
                       optimizer=opt,
                       metrics=['accuracy'])
