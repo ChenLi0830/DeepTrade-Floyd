@@ -47,7 +47,7 @@ def make_model(input_shape, nb_epochs=100, batch_size=128, lr=0.01, n_layers=1, 
            # validation_split=0.02,
            validation_data=(test_set.images, test_set.labels),
            callbacks=[
-               TensorBoard(log_dir='/output/logs', histogram_freq=10),
+               TensorBoard(log_dir='/output/logs', histogram_freq=100),
                ModelCheckpoint(filepath=model_path + '.best', save_best_only=True, mode='min')
            ])
 
