@@ -79,6 +79,6 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         operation = sys.argv[1]
     if operation == "train":
-        make_model([30, 61], 5000, 20480, n_layers=2, lr=0.002)
+        make_model([30, 61], 1000, 20480, n_layers=2, lr=0.002)
     else:
         print("Usage: gossip.py [train | evaluate | predict | clear_session]")
