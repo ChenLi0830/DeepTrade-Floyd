@@ -43,7 +43,7 @@ def make_model(input_shape, nb_epochs=100, batch_size=128, lr=0.01, n_layers=1, 
 
     train_set, test_set = read_ultimate("/dataset/", input_shape)
     wp.fit(train_set.images, train_set.labels, batch_size=batch_size,
-           nb_epoch=nb_epochs, shuffle=True, verbose=1,
+           nb_epoch=nb_epochs, shuffle=False, verbose=1,
            # validation_split=0.02,
            validation_data=(test_set.images, test_set.labels),
            callbacks=[

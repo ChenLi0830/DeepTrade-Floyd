@@ -19,11 +19,35 @@ from keras.models import Sequential
 from keras.optimizers import SGD, RMSprop, Adam
 from keras.models import load_model
 from keras.initializers import Constant
+from keras import backend as K
+
+
+def risk_estimation_long(y_true, y_pred):
+    fee = 0.00025
+    return -100. * (K.mean(y_true * y_pred) - K.mean(0.0002 * y_pred) - K.mean(fee * K.abs(y_pred[1:] - y_pred[:-1])))
+    # return -100. * (K.mean(y_true * y_pred) - K.mean(fee * K.abs(y_pred[1:] - y_pred[:-1])))
+    # return -100. * K.mean((y_true - 0.0002) * y_pred)  # this is for buy in only
+
+
+def risk_estimation_short(y_true, y_pred):
+    fee = 0.00025
+    return -100. * (K.mean(y_true * y_pred) - K.mean(-0.0002 * y_pred) - K.mean(fee * K.abs(y_pred[1:] - y_pred[:-1])))
+    # print(K.eval(y_pred))
+    # return -100. * K.mean((y_true + 0.0002) * y_pred)  # this is for sell out only
+    # return -100. * (K.mean(y_true * y_pred) + K.mean(0.0002 * y_pred))  # this is for sell out only
+
+
+def relu_limited_long(x, alpha=0., max_value=1.):
+    return K.relu(x, alpha=alpha, max_value=max_value)
+
+
+def relu_limited_short(x, alpha=0., max_value=1.):
+    return -1. * K.relu(x, alpha=alpha, max_value=max_value)
 
 
 class WindPuller(object):
-    # def __init__(self, input_shape, lr=0.01, n_layers=2, n_hidden=8, rate_dropout=0.2, loss='risk_estimation_long'):
-    def __init__(self, input_shape, lr=0.01, n_layers=2, n_hidden=8, rate_dropout=0.2, loss='risk_estimation_short'):
+    # def __init__(self, input_shape, lr=0.01, n_layers=2, n_hidden=8, rate_dropout=0.2, loss=risk_estimation_long):
+    def __init__(self, input_shape, lr=0.01, n_layers=2, n_hidden=8, rate_dropout=0.2, loss=risk_estimation_short):
         print("initializing..., learing rate %s, n_layers %s, n_hidden %s, dropout rate %s." %(lr, n_layers, n_hidden, rate_dropout))
         self.model = Sequential()
         self.model.add(Dropout(rate=rate_dropout, input_shape=(input_shape[0], input_shape[1])))
@@ -40,9 +64,9 @@ class WindPuller(object):
         # self.model.add(BatchNormalization(axis=-1, moving_mean_initializer=Constant(value=0.5),
         #               moving_variance_initializer=Constant(value=0.25)))
         # self.model.add(BatchRenormalization(axis=-1, beta_init=Constant(value=0.5)))
-        # self.model.add(Activation('relu_limited_long'))
+        # self.model.add(Activation(relu_limited_long))
         self.model.add(BatchRenormalization(axis=-1, beta_init=Constant(value=-0.5)))
-        self.model.add(Activation('relu_limited_short'))
+        self.model.add(Activation(relu_limited_short))
         # opt = RMSprop(lr=lr)
         opt = Adam(lr=lr, amsgrad=True)
         self.model.compile(loss=loss,
@@ -50,7 +74,7 @@ class WindPuller(object):
                       metrics=['accuracy'])
 
     def fit(self, x, y, batch_size=32, nb_epoch=100, verbose=1, callbacks=None,
-            validation_split=0., validation_data=None, shuffle=True,
+            validation_split=0., validation_data=None, shuffle=False,  # shuffle=True,
             class_weight=None, sample_weight=None, initial_epoch=0, **kwargs):
         self.model.fit(x, y, batch_size, nb_epoch, verbose, callbacks,
                        validation_split, validation_data, shuffle, class_weight, sample_weight,
